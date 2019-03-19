@@ -10,13 +10,28 @@ template <size_t mod> constexpr size_t ModPow2Order(mod_t root) {
       return order;
     }
   }
-  CONSTEXPR_FAIL("Invalid root!");
+  return 0;
 }
 
-template <size_t mod, mod_t root, bool invert> void ntt(std::vector<mod_t> *a) {
+template <size_t mod> constexpr size_t BestOrder() {
+  return 1ULL << __builtin_ctzll(mod - 1);
+}
+
+template <size_t mod> constexpr size_t FindRoot() {
+  size_t best = BestOrder<mod>();
+  for (size_t root = 1; root < mod; root++) {
+    if (ModPow2Order<mod>(root) == best) {
+      return root;
+    }
+  }
+  CONSTEXPR_FAIL("Could not find any root!");
+}
+
+template <size_t mod, bool invert> void ntt(std::vector<mod_t> *a) {
   size_t n = a->size();
   assert(__builtin_popcountll(n) == 1);
 
+  constexpr size_t root = FindRoot<mod>();
   constexpr size_t root_order = ModPow2Order<mod>(root);
   constexpr mod_t root_inv = ModInverse<mod>(root);
   assert(n <= root_order);
@@ -59,12 +74,12 @@ template <size_t mod, mod_t root, bool invert> void ntt(std::vector<mod_t> *a) {
 }
 } // namespace detail
 
-template <size_t mod, mod_t root> void NTT(std::vector<mod_t> *a) {
+template <size_t mod> void NTT(std::vector<mod_t> *a) {
   a->resize(NextPowerOfTwo(a->size()));
-  detail::ntt<mod, root, /*inverse=*/false>(a);
+  detail::ntt<mod, /*inverse=*/false>(a);
 }
 
-template <size_t mod, mod_t root> void INTT(std::vector<mod_t> *a) {
+template <size_t mod> void INTT(std::vector<mod_t> *a) {
   a->resize(NextPowerOfTwo(a->size()));
-  detail::ntt<mod, root, /*inverse=*/true>(a);
+  detail::ntt<mod, /*inverse=*/true>(a);
 }

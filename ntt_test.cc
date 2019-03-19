@@ -4,7 +4,6 @@
 #include <random>
 
 constexpr size_t mod = 998244353;
-constexpr mod_t root = 31;
 
 namespace {
 
@@ -18,8 +17,8 @@ TEST_P(NTTTestP, NTTINTTInverse) {
     d = dist(rng);
   }
   auto v_copy = v;
-  NTT<mod, root>(&v_copy);
-  INTT<mod, root>(&v_copy);
+  NTT<mod>(&v_copy);
+  INTT<mod>(&v_copy);
   v_copy.resize(v.size());
   EXPECT_THAT(v_copy, ::testing::Eq(v));
 }
