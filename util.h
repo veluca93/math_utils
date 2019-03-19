@@ -13,7 +13,9 @@ inline size_t NextPowerOfTwo(size_t n) {
 using mod_t = long long;
 
 constexpr bool IsPrime(size_t p) {
-  for (size_t a = 2; a * a <= p; a += 2) {
+  if (p % 2 == 0)
+    return false;
+  for (size_t a = 3; a * a <= p; a += 2) {
     if (p % a == 0)
       return false;
   }
