@@ -1,7 +1,21 @@
 #include "ntt.h"
 #include <algorithm>
+#include <stdio.h>
 
 using IPoly = std::vector<mod_t>;
+
+template <size_t mod> void PolyPrint(const IPoly &a) {
+  auto fmt = [](size_t c) {
+    if (c > mod / 2)
+      return c - mod;
+    return c;
+  };
+  fprintf(stderr, "%ld", fmt(a[0]));
+  for (size_t i = 1; i < a.size(); i++) {
+    fprintf(stderr, "%+ldx^%lu", fmt(a[i]), i);
+  }
+  fprintf(stderr, "\n");
+}
 
 template <size_t mod> IPoly PolyMulS(const IPoly &a, const IPoly &b) {
   IPoly ret(a.size() + b.size() - 1);
@@ -122,7 +136,7 @@ template <size_t mod> IPoly PolyRecp(const IPoly &a, size_t d) {
 
 template <size_t mod> IPoly PolyIdiv(IPoly a, IPoly b) {
   if (a.size() < b.size()) {
-    return a;
+    return {0};
   }
   size_t rdegree = a.size() - b.size() + 1;
   std::reverse(b.begin(), b.end());
